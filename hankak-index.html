@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1877f2">
+  <title>حنكك | HANKAK</title>
+  <style>
+    :root{--blue:#1877f2;--bg:#f0f2f5;--card:#fff;--text:#1c1e21;--muted:#65676b;--line:#e4e6eb}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Tahoma,sans-serif;color:var(--text)}
+    button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;font-weight:700}
+    .top{height:62px;background:#fff;box-shadow:0 1px 3px #0001;display:flex;align-items:center;justify-content:space-between;padding:0 max(16px,calc((100% - 1100px)/2));position:sticky;top:0;z-index:5}
+    .brand{display:flex;align-items:center;gap:9px;color:var(--blue);font-size:23px;font-weight:800}.logo{background:var(--blue);color:white;border-radius:12px;width:38px;height:38px;display:grid;place-items:center;font-size:26px}
+    .top small{color:var(--muted)}.wrap{max-width:1050px;margin:22px auto;padding:0 14px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 2px #00000012;margin-bottom:14px}
+    .side{position:sticky;top:80px;height:max-content}.side h3{margin:0 0 12px}.side p{color:var(--muted);font-size:14px;line-height:1.7}
+    .primary{background:var(--blue);color:white}.soft{background:#e7f3ff;color:var(--blue)}.danger{background:#ffe8e8;color:#b42318}
+    .field{width:100%;border:1px solid var(--line);border-radius:9px;padding:12px;margin:6px 0;background:#f7f8fa;outline-color:var(--blue)}
+    textarea.field{resize:vertical;min-height:90px}.row{display:flex;align-items:center;gap:9px}.between{justify-content:space-between}
+    .muted{color:var(--muted);font-size:13px}.hidden{display:none!important}.auth{max-width:420px;margin:55px auto;padding:0 14px}
+    .auth .card{padding:24px}.auth h1{text-align:center;color:var(--blue);margin:0 0 8px}.auth p{text-align:center;color:var(--muted)}
+    .post-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.avatar{width:42px;height:42px;border-radius:50%;background:#e7f3ff;color:var(--blue);display:grid;place-items:center;font-weight:800;font-size:19px;flex:none}
+    .post-text{white-space:pre-wrap;line-height:1.7;margin:10px 0 14px;overflow-wrap:anywhere}.post-actions{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+    .post-actions button{flex:1;background:transparent;color:var(--muted)}.post-actions button:hover{background:#f0f2f5}.post-actions .liked{color:var(--blue)}
+    .comment{background:#f0f2f5;border-radius:12px;padding:9px 12px;margin:8px 0}.comment strong{font-size:13px}.comment p{margin:5px 0;white-space:pre-wrap}
+    .comment-form{display:flex;gap:7px;margin-top:10px}.comment-form input{flex:1;min-width:0}
+    .empty{text-align:center;color:var(--muted);padding:28px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#202124;color:#fff;padding:12px 18px;border-radius:10px;z-index:20;max-width:90%;display:none}
+    @media(max-width:760px){.wrap{display:block;margin:12px auto}.side{position:static}.side .card{margin-bottom:12px}.top{padding:0 14px}.top small{display:none}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo">H</span><span>حنكك</span></div>
+    <small id="topUser">مجتمعك في مكان واحد</small>
+    <button id="logoutBtn" class="soft hidden">خروج</button>
+  </header>
+
+  <section id="authView" class="auth">
+    <div class="card">
+      <h1>مرحباً بك في حنكك</h1>
+      <p>تواصل مع أصحابك وشارك يومياتك</p>
+      <input id="nameInput" class="field hidden" placeholder="اسمك" autocomplete="name">
+      <input id="emailInput" class="field" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
+      <input id="passwordInput" class="field" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+      <button id="loginBtn" class="primary" style="width:100%;margin-top:8px">تسجيل الدخول</button>
+      <button id="signupBtn" class="soft" style="width:100%;margin-top:8px">إنشاء حساب جديد</button>
+      <p class="muted">يلزم استخدام بريد إلكتروني وكلمة مرور.</p>
+    </div>
+  </section>
+
+  <main id="appView" class="wrap hidden">
+    <aside class="side">
+      <div class="card">
+        <h3 id="welcomeName">أهلاً بك</h3>
+        <p>حنكك مساحة للتواصل ومشاركة الأفكار والمنشورات مع الأصدقاء.</p>
+        <button id="showRequestsBtn" class="soft" style="width:100%">طلبات الصداقة <span id="requestCount"></span></button>
+      </div>
+      <div class="card">
+        <h3>ابحث عن صديق</h3>
+        <input id="friendEmail" class="field" type="email" placeholder="البريد الإلكتروني للصديق">
+        <button id="findFriendBtn" class="primary" style="width:100%">إرسال طلب صداقة</button>
+      </div>
+      <div class="card">
+        <strong>عن حنكك</strong>
+        <p>نسخة أولية تعمل بالمنشورات النصية والتعليقات والإعجابات. رفع الصور مؤجل حالياً.</p>
+      </div>
+    </aside>
+    <section>
+      <div class="card">
+        <div class="row"><div class="avatar" id="myAvatar">H</div><strong id="composerName">أنشئ منشوراً</strong></div>
+        <textarea id="postInput" class="field" placeholder="ماذا يدور في بالك؟"></textarea>
+        <div class="row between"><span class="muted">شارك أفكارك مع مجتمع حنكك</span><button id="publishBtn" class="primary">نشر</button></div>
+      </div>
+      <div id="requestsPanel" class="card hidden">
+        <div class="row between"><strong>طلبات الصداقة الواردة</strong><button id="closeRequestsBtn" class="soft">إغلاق</button></div>
+        <div id="requestsList" class="muted" style="margin-top:10px">لا توجد طلبات حالياً.</div>
+      </div>
+      <div id="feed"><div class="empty">جاري تحميل المنشورات...</div></div>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    // إعدادات مشروع Firebase الحالي
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPSP_TWoITglGZBPPlogITrIxPiWDUOO0",
+      authDomain: "hankapp-2892d.firebaseapp.com",
+      databaseURL: "https://hankapp-2892d-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "hankapp-2892d",
+      storageBucket: "hankapp-2892d.firebasestorage.app",
+      messagingSenderId: "755481660216",
+      appId: "1:755481660216:web:e5ab48240ed5221ba9cfcd"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const $ = id => document.getElementById(id);
+    let currentUser = null, currentProfile = null, feedUnsub = null, requestsUnsub = null;
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',3200)}
+    function initials(name){return (name||'H').trim().charAt(0).toUpperCase()||'H'}
+    function showAuth(){ $('authView').classList.remove('hidden'); $('appView').classList.add('hidden'); $('logoutBtn').classList.add('hidden'); $('topUser').textContent='مجتمعك في مكان واحد'; }
+    function showApp(){
+      $('authView').classList.add('hidden'); $('appView').classList.remove('hidden'); $('logoutBtn').classList.remove('hidden');
+      const name=currentProfile?.name || currentUser.email.split('@')[0];
+      $('welcomeName').textContent='أهلاً، '+name; $('composerName').textContent=name; $('myAvatar').textContent=initials(name); $('topUser').textContent=name;
+      listenFeed(); listenRequests();
+    }
+    async function ensureProfile(user, name){
+      const ref=db.collection('users').doc(user.uid), snap=await ref.get();
+      if(!snap.exists){await ref.set({uid:user.uid,name:name||user.email.split('@')[0],email:user.email,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}
+      const fresh=await ref.get(); currentProfile=fresh.data();
+    }
+    $('loginBtn').onclick=async()=>{
+      try{await auth.signInWithEmailAndPassword($('emailInput').value.trim(),$('passwordInput').value);}
+      catch(e){toast('تعذر تسجيل الدخول: '+e.message);}
+    };
+    $('signupBtn').onclick=async()=>{
+      const name=$('nameInput').value.trim(), email=$('emailInput').value.trim(), password=$('passwordInput').value;
+      if(!name){$('nameInput').classList.remove('hidden');toast('اكتب اسمك أولاً');return;}
+      try{const cred=await auth.createUserWithEmailAndPassword(email,password);await ensureProfile(cred.user,name);toast('تم إنشاء الحساب بنجاح');}
+      catch(e){toast('تعذر إنشاء الحساب: '+e.message);}
+    };
+    $('nameInput').classList.remove('hidden');
+    $('logoutBtn').onclick=()=>auth.signOut();
+    auth.onAuthStateChanged(async user=>{
+      if(feedUnsub)feedUnsub(); if(requestsUnsub)requestsUnsub();
+      if(!user){currentUser=null;currentProfile=null;showAuth();return;}
+      currentUser=user;
+      try{await ensureProfile(user);showApp();}catch(e){toast('تعذر تحميل ملفك: '+e.message);showAuth();}
+    });
+
+    $('publishBtn').onclick=async()=>{
+      const body=$('postInput').value.trim(); if(!body)return toast('اكتب شيئاً قبل النشر');
+      $('publishBtn').disabled=true;
+      try{
+        await db.collection('posts').add({uid:currentUser.uid,authorName:currentProfile?.name||currentUser.email.split('@')[0],text:body,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        $('postInput').value='';toast('تم نشر منشورك بنجاح');
+      }catch(e){toast('تعذر النشر: '+e.message);}
+      finally{$('publishBtn').disabled=false;}
+    };
+
+    function listenFeed(){
+      if(feedUnsub)feedUnsub();
+      feedUnsub=db.collection('posts').orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
+        const feed=$('feed'); if(snap.empty){feed.innerHTML='<div class="card empty">لا توجد منشورات بعد. كن أول من ينشر!</div>';return;}
+        feed.innerHTML='';
+        snap.forEach(doc=>feed.appendChild(renderPost(doc)));
+      },err=>{$('feed').innerHTML='<div class="card empty">تعذر تحميل المنشورات: '+esc(err.message)+'</div>';});
+    }
+    const postUnsubs = [];
+    function listenFeed(){
+      if(feedUnsub)feedUnsub();
+      postUnsubs.splice(0).forEach(fn=>fn());
+      feedUnsub=db.collection('posts').orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
+        postUnsubs.splice(0).forEach(fn=>fn());
+        const feed=$('feed'); feed.innerHTML='';
+        if(snap.empty){feed.innerHTML='<div class="card empty">لا توجد منشورات بعد. كن أول من ينشر!</div>';return;}
+        snap.forEach(doc=>feed.appendChild(renderPost(doc)));
+      },err=>{$('feed').innerHTML='<div class="card empty">تعذر تحميل المنشورات: '+esc(err.message)+'</div>';});
+    }
+    function renderPost(doc){
+      const p=doc.data(), id=doc.id, name=p.authorName||'مستخدم حنكك';
+      const el=document.createElement('article');el.className='card';
+      el.innerHTML=`
+        <div class="post-head"><div class="avatar">${esc(initials(name))}</div><div><strong>${esc(name)}</strong><div class="muted">منشور على حنكك</div></div></div>
+        <div class="post-text">${esc(p.text)}</div>
+        <div class="row between muted"><span class="likes-count">0 إعجاب</span><span class="comments-count">0 تعليق</span></div>
+        <div class="post-actions"><button class="like-button">👍 إعجاب</button><button class="comment-focus">💬 تعليق</button></div>
+        <div class="comments-box"></div>
+        <div class="comment-form"><input class="field comment-input" style="margin:0" placeholder="اكتب تعليقاً..."><button class="primary comment-send">إرسال</button></div>`;
+      const likesRef=db.collection('posts').doc(id).collection('likes');
+      const likeButton=el.querySelector('.like-button');
+      const likeUnsub=likesRef.onSnapshot(s=>{
+        el.querySelector('.likes-count').textContent=s.size+' إعجاب';
+        const mine=s.docs.some(d=>d.id===currentUser.uid);
+        likeButton.classList.toggle('liked',mine);likeButton.textContent=mine?'👍 أعجبك':'👍 إعجاب';
+      },e=>toast('تعذر تحميل الإعجابات: '+e.message));
+      postUnsubs.push(likeUnsub);
+      likeButton.onclick=async()=>{
+        const ref=likesRef.doc(currentUser.uid);
+        try{const s=await ref.get();if(s.exists)await ref.delete();else await ref.set({uid:currentUser.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}
+        catch(e){toast('تعذر تسجيل الإعجاب: '+e.message);}
+      };
+      el.querySelector('.comment-focus').onclick=()=>el.querySelector('.comment-input').focus();
+      const commentsRef=db.collection('posts').doc(id).collection('comments');
+      const commentsUnsub=commentsRef.orderBy('createdAt','asc').limit(30).onSnapshot(s=>{
+        el.querySelector('.comments-count').textContent=s.size+' تعليق';
+        el.querySelector('.comments-box').innerHTML=s.docs.map(d=>{const c=d.data();return `<div class="comment"><strong>${esc(c.authorName||'مستخدم')}</strong><p>${esc(c.text)}</p></div>`;}).join('');
+      },e=>toast('تعذر تحميل التعليقات: '+e.message));
+      postUnsubs.push(commentsUnsub);
+      el.querySelector('.comment-send').onclick=async()=>{
+        const input=el.querySelector('.comment-input'), text=input.value.trim();if(!text)return;
+        try{await commentsRef.add({uid:currentUser.uid,authorName:currentProfile?.name||currentUser.email.split('@')[0],text,createdAt:firebase.firestore.FieldValue.serverTimestamp()});input.value='';}
+        catch(e){toast('تعذر إرسال التعليق: '+e.message);}
+      };
+      return el;
+    }
+
+    function listenRequests(){
+      if(requestsUnsub)requestsUnsub();
+      requestsUnsub=db.collection('friendRequests').where('toUid','==',currentUser.uid).where('status','==','pending').limit(30).onSnapshot(async snap=>{
+        $('requestCount').textContent=snap.size?'('+snap.size+')':'';
+        const box=$('requestsList');
+        if(snap.empty){box.textContent='لا توجد طلبات صداقة حالياً.';return;}
+        const rows=await Promise.all(snap.docs.map(async d=>{
+          const r=d.data();let name='مستخدم حنكك';
+          try{const u=await db.collection('users').doc(r.fromUid).get();if(u.exists)name=u.data().name||name;}catch(_){}
+          return `<div class="row between" style="padding:9px 0;border-bottom:1px solid var(--line)"><strong>${esc(name)}</strong><button class="primary" data-accept="${esc(d.id)}">قبول</button></div>`;
+        }));
+        box.innerHTML=rows.join('');
+        box.querySelectorAll('[data-accept]').forEach(b=>b.onclick=()=>acceptRequest(b.dataset.accept));
+      },e=>toast('تعذر تحميل طلبات الصداقة: '+e.message));
+    }
+    async function acceptRequest(id){
+      try{
+        const ref=db.collection('friendRequests').doc(id), snap=await ref.get();if(!snap.exists)return;
+        const r=snap.data(), members=[currentUser.uid,r.fromUid].sort();
+        await db.collection('friendships').doc(members.join('__')).set({members,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await ref.update({status:'accepted'});
+        toast('تم قبول طلب الصداقة');
+      }catch(e){toast('تعذر قبول الطلب: '+e.message);}
+    }
+    $('findFriendBtn').onclick=async()=>{
+      const email=$('friendEmail').value.trim().toLowerCase();
+      if(!email)return toast('اكتب البريد الإلكتروني للصديق');
+      try{
+        const found=await db.collection('users').where('email','==',email).limit(1).get();
+        if(found.empty)return toast('لم نعثر على مستخدم بهذا البريد');
+        const target=found.docs[0].id;
+        if(target===currentUser.uid)return toast('لا يمكنك إرسال طلب لنفسك');
+        const requestId=currentUser.uid+'_'+target, ref=db.collection('friendRequests').doc(requestId);
+        const old=await ref.get();
+        if(old.exists)return toast('سبق إرسال طلب لهذا المستخدم');
+        await ref.set({fromUid:currentUser.uid,toUid:target,status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        $('friendEmail').value='';toast('تم إرسال طلب الصداقة');
+      }catch(e){toast('تعذر إرسال الطلب: '+e.message);}
+    };
+    $('showRequestsBtn').onclick=()=>$('requestsPanel').classList.remove('hidden');
+    $('closeRequestsBtn').onclick=()=>$('requestsPanel').classList.add('hidden');
+  </script>
+</body>
+</html>
